@@ -54,6 +54,11 @@
             this.volumeIncreaseTimer = new System.Windows.Forms.Timer(this.components);
             this.volumeDecreaseTimer = new System.Windows.Forms.Timer(this.components);
             this.increaseDelayTimer = new System.Windows.Forms.Timer(this.components);
+            this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.label13 = new System.Windows.Forms.Label();
+            this.btnAddException = new System.Windows.Forms.Button();
+            this.tbProcessName = new System.Windows.Forms.TextBox();
+            this.lbExceptions = new System.Windows.Forms.ListBox();
             this.barMicIn = new Caster.Bar();
             this.barOut = new Caster.Bar();
             ((System.ComponentModel.ISupportInitialize)(this.nudMicBoost)).BeginInit();
@@ -65,6 +70,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.nudDecTime)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudIncTime)).BeginInit();
             this.groupBox2.SuspendLayout();
+            this.groupBox3.SuspendLayout();
             this.SuspendLayout();
             // 
             // nudMicBoost
@@ -75,7 +81,7 @@
             0,
             0,
             65536});
-            this.nudMicBoost.Location = new System.Drawing.Point(7, 119);
+            this.nudMicBoost.Location = new System.Drawing.Point(7, 107);
             this.nudMicBoost.Margin = new System.Windows.Forms.Padding(4);
             this.nudMicBoost.Maximum = new decimal(new int[] {
             5,
@@ -121,7 +127,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(6, 96);
+            this.label3.Location = new System.Drawing.Point(3, 84);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(81, 19);
             this.label3.TabIndex = 4;
@@ -130,7 +136,7 @@
             // 
             // nudMax
             // 
-            this.nudMax.Location = new System.Drawing.Point(7, 177);
+            this.nudMax.Location = new System.Drawing.Point(7, 164);
             this.nudMax.Margin = new System.Windows.Forms.Padding(4);
             this.nudMax.Minimum = new decimal(new int[] {
             1,
@@ -150,7 +156,7 @@
             // 
             // nudMin
             // 
-            this.nudMin.Location = new System.Drawing.Point(7, 234);
+            this.nudMin.Location = new System.Drawing.Point(8, 221);
             this.nudMin.Margin = new System.Windows.Forms.Padding(4);
             this.nudMin.Minimum = new decimal(new int[] {
             1,
@@ -187,9 +193,9 @@
             this.groupBox1.Controls.Add(this.label9);
             this.groupBox1.Controls.Add(this.label3);
             this.groupBox1.Controls.Add(this.nudMicBoost);
-            this.groupBox1.Location = new System.Drawing.Point(12, 12);
+            this.groupBox1.Location = new System.Drawing.Point(192, 12);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(135, 437);
+            this.groupBox1.Size = new System.Drawing.Size(135, 422);
             this.groupBox1.TabIndex = 8;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Settings";
@@ -197,7 +203,7 @@
             // label12
             // 
             this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(70, 292);
+            this.label12.Location = new System.Drawing.Point(70, 279);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(28, 19);
             this.label12.TabIndex = 13;
@@ -206,7 +212,7 @@
             // label11
             // 
             this.label11.AutoSize = true;
-            this.label11.Location = new System.Drawing.Point(70, 347);
+            this.label11.Location = new System.Drawing.Point(70, 334);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(28, 19);
             this.label11.TabIndex = 13;
@@ -215,7 +221,7 @@
             // label10
             // 
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(71, 405);
+            this.label10.Location = new System.Drawing.Point(71, 390);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(28, 19);
             this.label10.TabIndex = 13;
@@ -228,7 +234,7 @@
             0,
             0,
             0});
-            this.nudIncDelay.Location = new System.Drawing.Point(7, 403);
+            this.nudIncDelay.Location = new System.Drawing.Point(7, 388);
             this.nudIncDelay.Margin = new System.Windows.Forms.Padding(4);
             this.nudIncDelay.Maximum = new decimal(new int[] {
             5000,
@@ -253,7 +259,7 @@
             // 
             // nudMicThreshold
             // 
-            this.nudMicThreshold.Location = new System.Drawing.Point(7, 66);
+            this.nudMicThreshold.Location = new System.Drawing.Point(7, 50);
             this.nudMicThreshold.Margin = new System.Windows.Forms.Padding(4);
             this.nudMicThreshold.Name = "nudMicThreshold";
             this.nudMicThreshold.Size = new System.Drawing.Size(57, 27);
@@ -269,7 +275,7 @@
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(6, 43);
+            this.label8.Location = new System.Drawing.Point(3, 27);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(108, 19);
             this.label8.TabIndex = 11;
@@ -283,7 +289,7 @@
             0,
             0,
             0});
-            this.nudDecTime.Location = new System.Drawing.Point(7, 345);
+            this.nudDecTime.Location = new System.Drawing.Point(7, 332);
             this.nudDecTime.Maximum = new decimal(new int[] {
             5000,
             0,
@@ -312,7 +318,7 @@
             0,
             0,
             0});
-            this.nudIncTime.Location = new System.Drawing.Point(7, 290);
+            this.nudIncTime.Location = new System.Drawing.Point(7, 277);
             this.nudIncTime.Maximum = new decimal(new int[] {
             5000,
             0,
@@ -337,7 +343,7 @@
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(6, 323);
+            this.label7.Location = new System.Drawing.Point(3, 310);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(108, 19);
             this.label7.TabIndex = 7;
@@ -347,7 +353,7 @@
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(6, 268);
+            this.label6.Location = new System.Drawing.Point(3, 255);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(103, 19);
             this.label6.TabIndex = 7;
@@ -357,7 +363,7 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(6, 211);
+            this.label5.Location = new System.Drawing.Point(4, 198);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(95, 19);
             this.label5.TabIndex = 7;
@@ -367,7 +373,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(6, 154);
+            this.label4.Location = new System.Drawing.Point(3, 141);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(97, 19);
             this.label4.TabIndex = 7;
@@ -377,7 +383,7 @@
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(6, 380);
+            this.label9.Location = new System.Drawing.Point(3, 365);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(110, 19);
             this.label9.TabIndex = 4;
@@ -390,9 +396,9 @@
             this.groupBox2.Controls.Add(this.barOut);
             this.groupBox2.Controls.Add(this.label2);
             this.groupBox2.Controls.Add(this.label1);
-            this.groupBox2.Location = new System.Drawing.Point(153, 12);
+            this.groupBox2.Location = new System.Drawing.Point(333, 12);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(139, 437);
+            this.groupBox2.Size = new System.Drawing.Size(139, 422);
             this.groupBox2.TabIndex = 9;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Preview";
@@ -409,16 +415,70 @@
             // 
             this.increaseDelayTimer.Tick += new System.EventHandler(this.increaseDelayTimer_Tick);
             // 
+            // groupBox3
+            // 
+            this.groupBox3.Controls.Add(this.label13);
+            this.groupBox3.Controls.Add(this.btnAddException);
+            this.groupBox3.Controls.Add(this.tbProcessName);
+            this.groupBox3.Controls.Add(this.lbExceptions);
+            this.groupBox3.Location = new System.Drawing.Point(12, 12);
+            this.groupBox3.Name = "groupBox3";
+            this.groupBox3.Size = new System.Drawing.Size(174, 422);
+            this.groupBox3.TabIndex = 10;
+            this.groupBox3.TabStop = false;
+            this.groupBox3.Text = "Exceptions";
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(6, 27);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(106, 19);
+            this.label13.TabIndex = 3;
+            this.label13.Text = "Process name:";
+            // 
+            // btnAddException
+            // 
+            this.btnAddException.Enabled = false;
+            this.btnAddException.Font = new System.Drawing.Font("Calibri", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
+            this.btnAddException.Location = new System.Drawing.Point(6, 82);
+            this.btnAddException.Name = "btnAddException";
+            this.btnAddException.Size = new System.Drawing.Size(162, 33);
+            this.btnAddException.TabIndex = 2;
+            this.btnAddException.Text = "ADD";
+            this.btnAddException.UseVisualStyleBackColor = true;
+            this.btnAddException.Click += new System.EventHandler(this.btnAddException_Click);
+            // 
+            // tbProcessName
+            // 
+            this.tbProcessName.Location = new System.Drawing.Point(6, 49);
+            this.tbProcessName.Name = "tbProcessName";
+            this.tbProcessName.Size = new System.Drawing.Size(162, 27);
+            this.tbProcessName.TabIndex = 1;
+            this.tbProcessName.TextChanged += new System.EventHandler(this.tbProcessName_TextChanged);
+            this.tbProcessName.KeyDown += new System.Windows.Forms.KeyEventHandler(this.tbProcessName_KeyDown);
+            // 
+            // lbExceptions
+            // 
+            this.lbExceptions.FormattingEnabled = true;
+            this.lbExceptions.IntegralHeight = false;
+            this.lbExceptions.ItemHeight = 19;
+            this.lbExceptions.Location = new System.Drawing.Point(6, 121);
+            this.lbExceptions.Name = "lbExceptions";
+            this.lbExceptions.Size = new System.Drawing.Size(162, 295);
+            this.lbExceptions.TabIndex = 0;
+            this.lbExceptions.KeyDown += new System.Windows.Forms.KeyEventHandler(this.lbExceptions_KeyDown);
+            // 
             // barMicIn
             // 
             this.barMicIn.BackColor = System.Drawing.Color.DeepPink;
-            this.barMicIn.BarColor = System.Drawing.Color.MediumSpringGreen;
+            this.barMicIn.BarColor = System.Drawing.Color.FromArgb(((int)(((byte)(20)))), ((int)(((byte)(255)))), ((int)(((byte)(180)))));
             this.barMicIn.Location = new System.Drawing.Point(85, 73);
             this.barMicIn.Margin = new System.Windows.Forms.Padding(4);
             this.barMicIn.Name = "barMicIn";
             this.barMicIn.OutlineColor = System.Drawing.Color.Black;
             this.barMicIn.ShowThresholdValue = true;
-            this.barMicIn.Size = new System.Drawing.Size(35, 357);
+            this.barMicIn.Size = new System.Drawing.Size(35, 342);
             this.barMicIn.TabIndex = 0;
             this.barMicIn.ThresholdValue = 100;
             this.barMicIn.ThresholdValueColor = System.Drawing.Color.Yellow;
@@ -428,13 +488,13 @@
             // barOut
             // 
             this.barOut.BackColor = System.Drawing.Color.DeepPink;
-            this.barOut.BarColor = System.Drawing.Color.MediumSpringGreen;
+            this.barOut.BarColor = System.Drawing.Color.FromArgb(((int)(((byte)(20)))), ((int)(((byte)(255)))), ((int)(((byte)(180)))));
             this.barOut.Location = new System.Drawing.Point(19, 73);
             this.barOut.Margin = new System.Windows.Forms.Padding(4);
             this.barOut.Name = "barOut";
             this.barOut.OutlineColor = System.Drawing.Color.Black;
             this.barOut.ShowThresholdValue = true;
-            this.barOut.Size = new System.Drawing.Size(35, 357);
+            this.barOut.Size = new System.Drawing.Size(35, 342);
             this.barOut.TabIndex = 1;
             this.barOut.ThresholdValue = 0;
             this.barOut.ThresholdValueColor = System.Drawing.Color.Yellow;
@@ -444,15 +504,16 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 19F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(304, 461);
+            this.ClientSize = new System.Drawing.Size(484, 446);
+            this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.groupBox2);
             this.Font = new System.Drawing.Font("Calibri", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(4);
             this.MaximizeBox = false;
-            this.MaximumSize = new System.Drawing.Size(320, 500);
-            this.MinimumSize = new System.Drawing.Size(320, 500);
+            this.MaximumSize = new System.Drawing.Size(500, 485);
+            this.MinimumSize = new System.Drawing.Size(500, 485);
             this.Name = "Form1";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Caster";
@@ -467,6 +528,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.nudDecTime)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudIncTime)).EndInit();
             this.groupBox2.ResumeLayout(false);
+            this.groupBox3.ResumeLayout(false);
+            this.groupBox3.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -498,6 +561,11 @@
         private System.Windows.Forms.Timer volumeIncreaseTimer;
         private System.Windows.Forms.Timer volumeDecreaseTimer;
         private System.Windows.Forms.Timer increaseDelayTimer;
+        private System.Windows.Forms.GroupBox groupBox3;
+        private System.Windows.Forms.ListBox lbExceptions;
+        private System.Windows.Forms.Label label13;
+        private System.Windows.Forms.Button btnAddException;
+        private System.Windows.Forms.TextBox tbProcessName;
     }
 }
 

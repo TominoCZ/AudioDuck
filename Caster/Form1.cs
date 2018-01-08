@@ -1,6 +1,9 @@
 ﻿using Caster.Properties;
 using NAudio.CoreAudioApi;
 using System;
+using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Diagnostics;
 using System.Threading;
 using System.Windows.Forms;
 
@@ -8,7 +11,7 @@ namespace Caster
 {
     public partial class Form1 : Form
     {
-        SessionCollection sessions;
+        List<AudioSessionControl> _audioSessionControls;
 
         MMDevice speaker;
         MMDevice mic;
@@ -45,8 +48,9 @@ namespace Caster
                                 speaker = session.GetDefaultAudioEndpoint(DataFlow.Render, Role.Console);
                                 mic = session.GetDefaultAudioEndpoint(DataFlow.Capture, Role.Multimedia);
 
-                                sessions = speaker.AudioSessionManager.Sessions;
+                                var sessions = speaker.AudioSessionManager.Sessions;
 
+                                _audioSessionControls = getControls(sessions);
 
                                 double peakIn = mic.AudioMeterInformation.MasterPeakValue * (double)nudMicBoost.Value;
                                 double peakOut = speaker.AudioMeterInformation.MasterPeakValue;
@@ -83,9 +87,48 @@ namespace Caster
             updateThread.Start();
         }
 
+        private List<AudioSessionControl> getControls(SessionCollection sessions)
+        {
+            object[] ex = new object[lbExceptions.Items.Count];
+
+            lbExceptions.Items.CopyTo(ex, 0);
+
+            List<AudioSessionControl> controls = new List<AudioSessionControl>();
+
+            for (int i = 0; i < sessions.Count; i++)
+            {
+                var session = sessions[i];
+                var text = (session.GetSessionIdentifier + session.GetSessionInstanceIdentifier).ToLower();
+
+                bool inExceptions = false;
+
+                foreach (string e in ex)
+                {
+                    if (text.Contains(e))
+                    {
+                        inExceptions = true;
+                        break;
+                    }
+                }
+
+                if (!inExceptions)
+                    controls.Add(session);
+            }
+
+            return controls;
+        }
+
         private void Form1_Shown(object sender, EventArgs e)
         {
             Settings.Default.Reload();
+
+            if (Settings.Default.Exceptions != null)
+            {
+                foreach (var ex in Settings.Default.Exceptions)
+                {
+                    lbExceptions.Items.Add(ex);
+                }
+            }
 
             nudMicBoost.Value = (decimal)Settings.Default.MicBoost;
             barMicIn.ThresholdValue = (int)(nudMicThreshold.Value = Settings.Default.MicThreshold);
@@ -117,8 +160,8 @@ namespace Caster
 
         private void volumeIncreaseTimer_Tick(object sender, EventArgs e)
         {
-            for (int i = 0; i < sessions.Count; i++)
-                sessions[i].SimpleAudioVolume.Volume = (float)Clamp(sessions[i].SimpleAudioVolume.Volume + step, 0, (double)nudMax.Value / 100);
+            for (int i = 0; i < _audioSessionControls.Count; i++)
+                _audioSessionControls[i].SimpleAudioVolume.Volume = (float)Clamp(_audioSessionControls[i].SimpleAudioVolume.Volume + step, 0, (double)nudMax.Value / 100);
 
             if (GetTopSession().SimpleAudioVolume.Volume >= (float)(nudMax.Value / 100))
                 volumeIncreaseTimer.Stop();
@@ -126,8 +169,8 @@ namespace Caster
 
         private void volumeDecreaseTimer_Tick(object sender, EventArgs e)
         {
-            for (int i = 0; i < sessions.Count; i++)
-                sessions[i].SimpleAudioVolume.Volume = (float)Clamp(sessions[i].SimpleAudioVolume.Volume - step, (double)nudMin.Value / 100, 1);
+            for (int i = 0; i < _audioSessionControls.Count; i++)
+                _audioSessionControls[i].SimpleAudioVolume.Volume = (float)Clamp(_audioSessionControls[i].SimpleAudioVolume.Volume - step, (double)nudMin.Value / 100, 1);
 
             if (GetTopSession().SimpleAudioVolume.Volume <= (float)(nudMin.Value / 100))
             {
@@ -182,9 +225,57 @@ namespace Caster
             loadedSettings = true;
         }
 
-        double Clamp(double d, double min, double max)
+        private void lbExceptions_KeyDown(object sender, KeyEventArgs e)
         {
-            return d < min ? min : (d > max ? max : d);
+            if (e.KeyCode == Keys.Delete)
+            {
+                if (lbExceptions.SelectedItem is string s)
+                {
+                    var dr = MessageBox.Show($"Remove '{s}' from the exceptions?", "Warning", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+
+                    if (dr == DialogResult.Yes)
+                        lbExceptions.Items.Remove(s);
+                }
+            }
+        }
+
+        private void btnAddException_Click(object sender, EventArgs e)
+        {
+            lbExceptions.Items.Add(tbProcessName.Text.Replace(" ", "").ToLower().Split('.')[0]);
+            tbProcessName.Text = "";
+
+            var sc = new StringCollection();
+            for (int i = 0; i < lbExceptions.Items.Count; i++)
+            {
+                sc.Add((string)lbExceptions.Items[i]);
+            }
+
+            Settings.Default.Exceptions = sc;
+            Settings.Default.Save();
+        }
+
+        private void tbProcessName_TextChanged(object sender, EventArgs e)
+        {
+            btnAddException.Enabled = !String.IsNullOrWhiteSpace(tbProcessName.Text);
+
+            string text = tbProcessName.Text.Replace(" ", "").ToLower().Split('.')[0];
+
+            for (int i = 0; i < lbExceptions.Items.Count; i++)
+            {
+                var item = (string)lbExceptions.Items[i];
+
+                if (item.Contains(text))
+                {
+                    btnAddException.Enabled = false;
+                    break;
+                }
+            }
+        }
+
+        private void tbProcessName_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter && btnAddException.Enabled)
+                btnAddException_Click(sender, null);
         }
 
         AudioSessionControl GetTopSession()
@@ -192,9 +283,9 @@ namespace Caster
             float level = float.MinValue;
             AudioSessionControl asc = null;
 
-            for (int i = 0; i < sessions.Count; i++)
+            for (int i = 0; i < _audioSessionControls.Count; i++)
             {
-                var session = sessions[i];
+                var session = _audioSessionControls[i];
 
                 if (session.SimpleAudioVolume.Volume > level)
                 {
@@ -204,6 +295,11 @@ namespace Caster
             }
 
             return asc;
+        }
+
+        private double Clamp(double d, double min, double max)
+        {
+            return d < min ? min : (d > max ? max : d);
         }
     }
 

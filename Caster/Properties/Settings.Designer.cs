@@ -106,5 +106,16 @@ namespace Caster.Properties {
                 this["IncreaseDelay"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        public global::System.Collections.Specialized.StringCollection Exceptions {
+            get {
+                return ((global::System.Collections.Specialized.StringCollection)(this["Exceptions"]));
+            }
+            set {
+                this["Exceptions"] = value;
+            }
+        }
     }
 }
