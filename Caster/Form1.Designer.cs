@@ -51,6 +51,8 @@
             this.label4 = new System.Windows.Forms.Label();
             this.label9 = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.barMicIn = new Caster.Bar();
+            this.barOut = new Caster.Bar();
             this.volumeIncreaseTimer = new System.Windows.Forms.Timer(this.components);
             this.volumeDecreaseTimer = new System.Windows.Forms.Timer(this.components);
             this.increaseDelayTimer = new System.Windows.Forms.Timer(this.components);
@@ -59,8 +61,6 @@
             this.btnAddException = new System.Windows.Forms.Button();
             this.tbProcessName = new System.Windows.Forms.TextBox();
             this.lbExceptions = new System.Windows.Forms.ListBox();
-            this.barMicIn = new Caster.Bar();
-            this.barOut = new Caster.Bar();
             ((System.ComponentModel.ISupportInitialize)(this.nudMicBoost)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudMax)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudMin)).BeginInit();
@@ -403,6 +403,37 @@
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Preview";
             // 
+            // barMicIn
+            // 
+            this.barMicIn.BackColor = System.Drawing.Color.DeepPink;
+            this.barMicIn.BarColor = System.Drawing.Color.FromArgb(((int)(((byte)(20)))), ((int)(((byte)(255)))), ((int)(((byte)(180)))));
+            this.barMicIn.Location = new System.Drawing.Point(85, 73);
+            this.barMicIn.Margin = new System.Windows.Forms.Padding(4);
+            this.barMicIn.Name = "barMicIn";
+            this.barMicIn.OutlineColor = System.Drawing.Color.Black;
+            this.barMicIn.ShowThresholdValue = true;
+            this.barMicIn.Size = new System.Drawing.Size(35, 342);
+            this.barMicIn.TabIndex = 0;
+            this.barMicIn.ThresholdValue = 100;
+            this.barMicIn.ThresholdValueColor = System.Drawing.Color.Yellow;
+            this.barMicIn.Value = 0;
+            this.barMicIn.ReachedThreshold += new System.EventHandler(this.barMicIn_ReachedThreshold);
+            // 
+            // barOut
+            // 
+            this.barOut.BackColor = System.Drawing.Color.DeepPink;
+            this.barOut.BarColor = System.Drawing.Color.FromArgb(((int)(((byte)(20)))), ((int)(((byte)(255)))), ((int)(((byte)(180)))));
+            this.barOut.Location = new System.Drawing.Point(19, 73);
+            this.barOut.Margin = new System.Windows.Forms.Padding(4);
+            this.barOut.Name = "barOut";
+            this.barOut.OutlineColor = System.Drawing.Color.Black;
+            this.barOut.ShowThresholdValue = true;
+            this.barOut.Size = new System.Drawing.Size(35, 342);
+            this.barOut.TabIndex = 1;
+            this.barOut.ThresholdValue = 0;
+            this.barOut.ThresholdValueColor = System.Drawing.Color.Yellow;
+            this.barOut.Value = 0;
+            // 
             // volumeIncreaseTimer
             // 
             this.volumeIncreaseTimer.Tick += new System.EventHandler(this.volumeIncreaseTimer_Tick);
@@ -468,37 +499,6 @@
             this.lbExceptions.Size = new System.Drawing.Size(162, 295);
             this.lbExceptions.TabIndex = 0;
             this.lbExceptions.KeyDown += new System.Windows.Forms.KeyEventHandler(this.lbExceptions_KeyDown);
-            // 
-            // barMicIn
-            // 
-            this.barMicIn.BackColor = System.Drawing.Color.DeepPink;
-            this.barMicIn.BarColor = System.Drawing.Color.FromArgb(((int)(((byte)(20)))), ((int)(((byte)(255)))), ((int)(((byte)(180)))));
-            this.barMicIn.Location = new System.Drawing.Point(85, 73);
-            this.barMicIn.Margin = new System.Windows.Forms.Padding(4);
-            this.barMicIn.Name = "barMicIn";
-            this.barMicIn.OutlineColor = System.Drawing.Color.Black;
-            this.barMicIn.ShowThresholdValue = true;
-            this.barMicIn.Size = new System.Drawing.Size(35, 342);
-            this.barMicIn.TabIndex = 0;
-            this.barMicIn.ThresholdValue = 100;
-            this.barMicIn.ThresholdValueColor = System.Drawing.Color.Yellow;
-            this.barMicIn.Value = 0;
-            this.barMicIn.ReachedThreshold += new System.EventHandler(this.barMicIn_ReachedThreshold);
-            // 
-            // barOut
-            // 
-            this.barOut.BackColor = System.Drawing.Color.DeepPink;
-            this.barOut.BarColor = System.Drawing.Color.FromArgb(((int)(((byte)(20)))), ((int)(((byte)(255)))), ((int)(((byte)(180)))));
-            this.barOut.Location = new System.Drawing.Point(19, 73);
-            this.barOut.Margin = new System.Windows.Forms.Padding(4);
-            this.barOut.Name = "barOut";
-            this.barOut.OutlineColor = System.Drawing.Color.Black;
-            this.barOut.ShowThresholdValue = true;
-            this.barOut.Size = new System.Drawing.Size(35, 342);
-            this.barOut.TabIndex = 1;
-            this.barOut.ThresholdValue = 0;
-            this.barOut.ThresholdValueColor = System.Drawing.Color.Yellow;
-            this.barOut.Value = 0;
             // 
             // Form1
             // 

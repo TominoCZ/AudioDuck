@@ -3,7 +3,6 @@ using NAudio.CoreAudioApi;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Diagnostics;
 using System.Threading;
 using System.Windows.Forms;
 
@@ -79,7 +78,7 @@ namespace Caster
                             Thread.Sleep(100);
                     }
 
-                    Thread.Sleep(TimeSpan.FromMilliseconds(1000.0 / 60 / 3.0)); //get 3 samples while maintaining 60 FPS
+                    Thread.Sleep(TimeSpan.FromMilliseconds(1000.0 / 60 / 3.0)); //get 3 samples for averaging while maintaining 60 FPS
                 }
             })
             { IsBackground = true };
@@ -241,8 +240,23 @@ namespace Caster
 
         private void btnAddException_Click(object sender, EventArgs e)
         {
-            lbExceptions.Items.Add(tbProcessName.Text.Replace(" ", "").ToLower().Split('.')[0]);
+            string process = tbProcessName.Text.Replace(" ", "").ToLower().Split('.')[0];
+            lbExceptions.Items.Add(process);
             tbProcessName.Text = "";
+
+            //set that process' volume level
+            for (int i = 0; i < _audioSessionControls.Count; i++)
+            {
+                var session = _audioSessionControls[i];
+
+                string text = session.GetSessionIdentifier + session.GetSessionInstanceIdentifier.ToLower();
+
+                if (text.Contains(process))
+                {
+                    session.SimpleAudioVolume.Volume = (float)nudMax.Value / 100;
+                    break;
+                }
+            }
 
             var sc = new StringCollection();
             for (int i = 0; i < lbExceptions.Items.Count; i++)
