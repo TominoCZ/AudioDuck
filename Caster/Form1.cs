@@ -1,10 +1,7 @@
 ﻿using Caster.Properties;
 using NAudio.CoreAudioApi;
-using NAudio.Wave;
 using System;
-using System.Diagnostics;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Caster
@@ -24,24 +21,74 @@ namespace Caster
 
         bool loadedSettings;
 
-        FastTimer volumeIncreaseTimer, volumeDecreaseTimer, increaseDelayTimer;
-
         public Form1()
         {
             InitializeComponent();
 
-            volumeIncreaseTimer = new FastTimer();
-            volumeDecreaseTimer = new FastTimer();
-            increaseDelayTimer = new FastTimer();
+            micAvg = new Average();
+            speakerAvg = new Average();
 
-            volumeIncreaseTimer.Tick += volumeIncreaseTimer_Tick;
-            volumeDecreaseTimer.Tick += volumeDecreaseTimer_Tick;
-            increaseDelayTimer.Tick += increaseDelayTimer_Tick;
+            updateThread = new Thread(() =>
+            {
+                bool caught = false;
 
+                while (true)
+                {
+                    if (IsHandleCreated)
+                    {
+                        BeginInvoke(new MethodInvoker(() =>
+                        {
+                            try
+                            {
+                                //load devices
+                                var session = new MMDeviceEnumerator();
+                                speaker = session.GetDefaultAudioEndpoint(DataFlow.Render, Role.Console);
+                                mic = session.GetDefaultAudioEndpoint(DataFlow.Capture, Role.Multimedia);
+
+                                sessions = speaker.AudioSessionManager.Sessions;
+
+
+                                double peakIn = mic.AudioMeterInformation.MasterPeakValue * (double)nudMicBoost.Value;
+                                double peakOut = speaker.AudioMeterInformation.MasterPeakValue;
+
+                                micAvg.Add(Clamp(peakIn, 0, 1));
+
+                                if (micAvg.isReady())
+                                    barMicIn.Value = (int)(micAvg.getAverage() * 100);
+
+                                speakerAvg.Add(peakOut);
+
+                                if (speakerAvg.isReady())
+                                    barOut.Value = (int)(speakerAvg.getAverage() * 100 * speaker.AudioEndpointVolume.MasterVolumeLevelScalar * GetTopSession().SimpleAudioVolume.Volume);
+
+                                barOut.ThresholdValue = (int)(GetTopSession().SimpleAudioVolume.Volume * 100 * speaker.AudioEndpointVolume.MasterVolumeLevelScalar);
+
+                                caught = false;
+                            }
+                            catch
+                            {
+                                caught = true;
+                            }
+                        }));
+
+                        if (caught)
+                            Thread.Sleep(100);
+                    }
+
+                    Thread.Sleep(TimeSpan.FromMilliseconds(1000.0 / 60 / 3.0)); //get 3 samples while maintaining 60 FPS
+                }
+            })
+            { IsBackground = true };
+
+            updateThread.Start();
+        }
+
+        private void Form1_Shown(object sender, EventArgs e)
+        {
             Settings.Default.Reload();
 
             nudMicBoost.Value = (decimal)Settings.Default.MicBoost;
-            nudMicThreshold.Value = Settings.Default.MicThreshold;
+            barMicIn.ThresholdValue = (int)(nudMicThreshold.Value = Settings.Default.MicThreshold);
             nudMin.Value = Settings.Default.MinVolume;
             nudMax.Value = Settings.Default.MaxVolume;
             nudIncTime.Value = Settings.Default.IncreaseTime;
@@ -50,50 +97,7 @@ namespace Caster
 
             loadedSettings = true;
 
-            valueChanged(null, null);
-
-            micAvg = new Average();
-            speakerAvg = new Average();
-
-            updateThread = new Thread(() =>
-            {
-                while (true)
-                {
-                    if (IsHandleCreated)
-                    {
-                        BeginInvoke(new MethodInvoker(() =>
-                        {
-                            //load devices
-                            var session = new MMDeviceEnumerator();
-
-                            speaker = session.GetDefaultAudioEndpoint(DataFlow.Render, Role.Console);
-                            mic = session.GetDefaultAudioEndpoint(DataFlow.Capture, Role.Multimedia);
-
-                            sessions = speaker.AudioSessionManager.Sessions;
-
-
-                            double peakIn = mic.AudioMeterInformation.MasterPeakValue * (double)nudMicBoost.Value;
-                            double peakOut = speaker.AudioMeterInformation.MasterPeakValue;
-
-                            micAvg.Add(Clamp(peakIn, 0, 1));
-
-                            if (micAvg.isReady())
-                                barMicIn.Value = (int)(micAvg.getAverage() * 100);
-
-                            speakerAvg.Add(peakOut);
-
-                            if (speakerAvg.isReady())
-                                barOut.Value = (int)(speakerAvg.getAverage() * 100 * speaker.AudioEndpointVolume.MasterVolumeLevelScalar * GetTopSession().SimpleAudioVolume.Volume);
-
-                            barOut.ThresholdValue = (int)(GetTopSession().SimpleAudioVolume.Volume * 100 * speaker.AudioEndpointVolume.MasterVolumeLevelScalar);
-                        }));
-                    }
-                    Thread.Sleep(TimeSpan.FromMilliseconds(1000.0 / 60.0 / 3.0)); //get 5 samples while maintaining 60 FPS
-                }
-            })
-            { IsBackground = true };
-
-            updateThread.Start();
+            nud_ValueChanged(null, null);
         }
 
         private void barMicIn_ReachedThreshold(object sender, EventArgs e)
@@ -102,11 +106,11 @@ namespace Caster
 
             if (!volumeDecreaseTimer.Enabled)
             {
-                step = Math.Abs(GetTopSession().SimpleAudioVolume.Volume - (double)nudMin.Value / 100) / 10;
+                step = Math.Abs(GetTopSession().SimpleAudioVolume.Volume - (double)nudMin.Value / 100) / 4;
 
                 volumeIncreaseTimer.Stop();
 
-                volumeDecreaseTimer.Interval = TimeSpan.FromMilliseconds((double)nudDecTime.Value / 10);
+                volumeDecreaseTimer.Interval = (int)(nudDecTime.Value / 4);
                 volumeDecreaseTimer.Start();
             }
         }
@@ -133,6 +137,56 @@ namespace Caster
             }
         }
 
+        private void increaseDelayTimer_Tick(object sender, EventArgs e)
+        {
+            step = Math.Abs((double)nudMax.Value / 100 - GetTopSession().SimpleAudioVolume.Volume) / 12;
+
+            volumeIncreaseTimer.Interval = (int)(nudIncTime.Value / 12);
+            volumeIncreaseTimer.Start();
+
+            increaseDelayTimer.Stop();
+        }
+
+        private void beginIncrease()
+        {
+            if (!increaseDelayTimer.Enabled)
+            {
+                increaseDelayTimer.Interval = (int)(nudIncDelay.Value);
+                increaseDelayTimer.Enabled = true;
+            }
+        }
+
+        private void nud_ValueChanged(object sender, EventArgs e)
+        {
+            if (!loadedSettings)
+                return;
+
+            loadedSettings = false;
+
+            if (sender == nudMicThreshold)
+                barMicIn.ThresholdValue = (int)nudMicThreshold.Value;
+
+            Settings.Default.MicBoost = (double)nudMicBoost.Value;
+            Settings.Default.MicThreshold = (int)nudMicThreshold.Value;
+
+            Settings.Default.MinVolume = (int)nudMin.Value;
+            Settings.Default.MaxVolume = (int)nudMax.Value;
+
+            Settings.Default.IncreaseTime = (int)nudIncTime.Value;
+            Settings.Default.DecreaseTime = (int)nudDecTime.Value;
+
+            Settings.Default.IncreaseDelay = (int)nudIncDelay.Value;
+
+            Settings.Default.Save();
+
+            loadedSettings = true;
+        }
+
+        double Clamp(double d, double min, double max)
+        {
+            return d < min ? min : (d > max ? max : d);
+        }
+
         AudioSessionControl GetTopSession()
         {
             float level = float.MinValue;
@@ -150,101 +204,6 @@ namespace Caster
             }
 
             return asc;
-        }
-
-        void beginIncrease()
-        {
-            if (!increaseDelayTimer.Enabled)
-            {
-                increaseDelayTimer.Interval = TimeSpan.FromMilliseconds((double)nudIncDelay.Value);
-                increaseDelayTimer.Enabled = true;
-            }
-        }
-
-        private void nudMicThreshold_ValueChanged(object sender, EventArgs e)
-        {
-            barMicIn.ThresholdValue = (int)nudMicThreshold.Value;
-        }
-
-        private void tbMax_ValueChanged(object sender, EventArgs e)
-        {
-            nudMax.Value = (decimal)Clamp(tbMax.Value, 1, tbMax.Maximum);
-        }
-
-        private void tbMin_ValueChanged(object sender, EventArgs e)
-        {
-            nudMin.Value = (decimal)Clamp(tbMin.Value, 1, tbMin.Maximum);
-        }
-
-        private void ibIncTime_ValueChanged(object sender, EventArgs e)
-        {
-            nudIncTime.Value = tbIncTime.Value;
-        }
-
-        private void tbDecTime_ValueChanged(object sender, EventArgs e)
-        {
-            nudDecTime.Value = tbDecTime.Value;
-        }
-
-        private void tbIncDelay_ValueChanged(object sender, EventArgs e)
-        {
-            nudIncDelay.Value = tbIncDelay.Value;
-        }
-
-        private void tbMicThreshold_Scroll(object sender, EventArgs e)
-        {
-            nudMicThreshold.Value = tbMicThreshold.Value;
-        }
-
-        private void tbMicBoost_Scroll(object sender, EventArgs e)
-        {
-            nudMicBoost.Value = (decimal)tbMicBoost.Value / 10;
-        }
-
-        private void valueChanged(object sender, EventArgs e)
-        {
-            if (!loadedSettings)
-                return;
-
-            Settings.Default.MicBoost = (double)nudMicBoost.Value;
-            Settings.Default.MicThreshold = (int)nudMicThreshold.Value;
-
-            Settings.Default.MinVolume = (int)nudMin.Value;
-            Settings.Default.MaxVolume = (int)nudMax.Value;
-
-            Settings.Default.IncreaseTime = (int)nudIncTime.Value;
-            Settings.Default.DecreaseTime = (int)nudDecTime.Value;
-
-            Settings.Default.IncreaseDelay = (int)nudIncDelay.Value;
-
-
-            tbMicBoost.Value = (int)(nudMicBoost.Value * 10);
-            tbMicThreshold.Value = (int)nudMicThreshold.Value;
-
-            tbMin.Value = (int)nudMin.Value;
-            tbMax.Value = (int)nudMax.Value;
-
-            tbIncTime.Value = (int)nudIncTime.Value;
-            tbDecTime.Value = (int)nudDecTime.Value;
-
-            tbIncDelay.Value = (int)nudIncDelay.Value;
-
-            Settings.Default.Save();
-        }
-
-        private void increaseDelayTimer_Tick(object sender, EventArgs e)
-        {
-            step = Math.Abs((double)nudMax.Value / 100 - GetTopSession().SimpleAudioVolume.Volume) / 15;
-
-            volumeIncreaseTimer.Interval = TimeSpan.FromMilliseconds((double)nudIncTime.Value / 15);
-            volumeIncreaseTimer.Start();
-
-            increaseDelayTimer.Stop();
-        }
-
-        double Clamp(double d, double min, double max)
-        {
-            return d < min ? min : (d > max ? max : d);
         }
     }
 
@@ -287,87 +246,6 @@ namespace Caster
             Values = new double[] { -1, -1, -1 };
 
             return avg;
-        }
-    }
-
-    class FastTimer
-    {
-        public EventHandler Tick;
-        public TimeSpan Interval;
-
-        public bool Enabled
-        {
-            get => _enabled;
-
-            set
-            {
-                if (value != _enabled)
-                {
-                    if (value)
-                        Start();
-                    else
-                        Stop();
-                }
-            }
-        }
-
-        private bool _enabled;
-
-        ThreadNode thread;
-
-        public FastTimer()
-        {
-            Interval = TimeSpan.FromMilliseconds(1);
-        }
-
-        public void Start()
-        {
-            if (thread != null || Tick == null)
-                return;
-
-            thread = new ThreadNode();
-            thread.Tick += tick;
-            thread.Interval = Interval;
-            thread.Enabled = true;
-            thread.Start();
-        }
-
-        private void tick(object sender, EventArgs e)
-        {
-            Tick(sender, e);
-        }
-
-        public void Stop()
-        {
-            if (thread != null)
-            {
-                thread.Enabled = false;
-                thread = null;
-            }
-        }
-    }
-
-    class ThreadNode
-    {
-        public EventHandler Tick;
-        public TimeSpan Interval;
-
-        public bool Enabled;
-
-        private Thread t;
-
-        public void Start()
-        {
-            t = new Thread(() =>
-            {
-                while (Enabled)
-                {
-                    Thread.Sleep(Interval);
-
-                    Tick(this, null);
-                }
-            });
-            t.Start();
         }
     }
 }

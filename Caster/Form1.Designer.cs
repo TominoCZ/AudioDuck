@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.nudMicBoost = new System.Windows.Forms.NumericUpDown();
             this.label1 = new System.Windows.Forms.Label();
@@ -36,13 +37,9 @@
             this.nudMax = new System.Windows.Forms.NumericUpDown();
             this.nudMin = new System.Windows.Forms.NumericUpDown();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.tbMicThreshold = new System.Windows.Forms.TrackBar();
-            this.tbMicBoost = new System.Windows.Forms.TrackBar();
-            this.tbMax = new System.Windows.Forms.TrackBar();
-            this.tbMin = new System.Windows.Forms.TrackBar();
-            this.tbIncTime = new System.Windows.Forms.TrackBar();
-            this.tbDecTime = new System.Windows.Forms.TrackBar();
-            this.tbIncDelay = new System.Windows.Forms.TrackBar();
+            this.label12 = new System.Windows.Forms.Label();
+            this.label11 = new System.Windows.Forms.Label();
+            this.label10 = new System.Windows.Forms.Label();
             this.nudIncDelay = new System.Windows.Forms.NumericUpDown();
             this.nudMicThreshold = new System.Windows.Forms.NumericUpDown();
             this.label8 = new System.Windows.Forms.Label();
@@ -54,19 +51,15 @@
             this.label4 = new System.Windows.Forms.Label();
             this.label9 = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.volumeIncreaseTimer = new System.Windows.Forms.Timer(this.components);
+            this.volumeDecreaseTimer = new System.Windows.Forms.Timer(this.components);
+            this.increaseDelayTimer = new System.Windows.Forms.Timer(this.components);
             this.barMicIn = new Caster.Bar();
             this.barOut = new Caster.Bar();
             ((System.ComponentModel.ISupportInitialize)(this.nudMicBoost)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudMax)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudMin)).BeginInit();
             this.groupBox1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.tbMicThreshold)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.tbMicBoost)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.tbMax)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.tbMin)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.tbIncTime)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.tbDecTime)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.tbIncDelay)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudIncDelay)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudMicThreshold)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudDecTime)).BeginInit();
@@ -82,7 +75,7 @@
             0,
             0,
             65536});
-            this.nudMicBoost.Location = new System.Drawing.Point(7, 113);
+            this.nudMicBoost.Location = new System.Drawing.Point(7, 119);
             this.nudMicBoost.Margin = new System.Windows.Forms.Padding(4);
             this.nudMicBoost.Maximum = new decimal(new int[] {
             5,
@@ -97,12 +90,13 @@
             this.nudMicBoost.Name = "nudMicBoost";
             this.nudMicBoost.Size = new System.Drawing.Size(57, 27);
             this.nudMicBoost.TabIndex = 2;
+            this.nudMicBoost.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.nudMicBoost.Value = new decimal(new int[] {
             1,
             0,
             0,
             0});
-            this.nudMicBoost.ValueChanged += new System.EventHandler(this.valueChanged);
+            this.nudMicBoost.ValueChanged += new System.EventHandler(this.nud_ValueChanged);
             // 
             // label1
             // 
@@ -126,16 +120,17 @@
             // 
             // label3
             // 
-            this.label3.Location = new System.Drawing.Point(68, 91);
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(6, 96);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(194, 19);
+            this.label3.Size = new System.Drawing.Size(81, 19);
             this.label3.TabIndex = 4;
             this.label3.Text = "Mic boost:";
             this.label3.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // nudMax
             // 
-            this.nudMax.Location = new System.Drawing.Point(7, 170);
+            this.nudMax.Location = new System.Drawing.Point(7, 177);
             this.nudMax.Margin = new System.Windows.Forms.Padding(4);
             this.nudMax.Minimum = new decimal(new int[] {
             1,
@@ -145,16 +140,17 @@
             this.nudMax.Name = "nudMax";
             this.nudMax.Size = new System.Drawing.Size(57, 27);
             this.nudMax.TabIndex = 5;
+            this.nudMax.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.nudMax.Value = new decimal(new int[] {
             100,
             0,
             0,
             0});
-            this.nudMax.ValueChanged += new System.EventHandler(this.valueChanged);
+            this.nudMax.ValueChanged += new System.EventHandler(this.nud_ValueChanged);
             // 
             // nudMin
             // 
-            this.nudMin.Location = new System.Drawing.Point(7, 227);
+            this.nudMin.Location = new System.Drawing.Point(7, 234);
             this.nudMin.Margin = new System.Windows.Forms.Padding(4);
             this.nudMin.Minimum = new decimal(new int[] {
             1,
@@ -164,22 +160,19 @@
             this.nudMin.Name = "nudMin";
             this.nudMin.Size = new System.Drawing.Size(57, 27);
             this.nudMin.TabIndex = 6;
+            this.nudMin.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.nudMin.Value = new decimal(new int[] {
-            25,
+            30,
             0,
             0,
             0});
-            this.nudMin.ValueChanged += new System.EventHandler(this.valueChanged);
+            this.nudMin.ValueChanged += new System.EventHandler(this.nud_ValueChanged);
             // 
             // groupBox1
             // 
-            this.groupBox1.Controls.Add(this.tbMicThreshold);
-            this.groupBox1.Controls.Add(this.tbMicBoost);
-            this.groupBox1.Controls.Add(this.tbMax);
-            this.groupBox1.Controls.Add(this.tbMin);
-            this.groupBox1.Controls.Add(this.tbIncTime);
-            this.groupBox1.Controls.Add(this.tbDecTime);
-            this.groupBox1.Controls.Add(this.tbIncDelay);
+            this.groupBox1.Controls.Add(this.label12);
+            this.groupBox1.Controls.Add(this.label11);
+            this.groupBox1.Controls.Add(this.label10);
             this.groupBox1.Controls.Add(this.nudIncDelay);
             this.groupBox1.Controls.Add(this.nudMicThreshold);
             this.groupBox1.Controls.Add(this.label8);
@@ -196,107 +189,37 @@
             this.groupBox1.Controls.Add(this.nudMicBoost);
             this.groupBox1.Location = new System.Drawing.Point(12, 12);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(275, 437);
+            this.groupBox1.Size = new System.Drawing.Size(135, 437);
             this.groupBox1.TabIndex = 8;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Settings";
             // 
-            // tbMicThreshold
+            // label12
             // 
-            this.tbMicThreshold.AutoSize = false;
-            this.tbMicThreshold.Location = new System.Drawing.Point(72, 58);
-            this.tbMicThreshold.Maximum = 100;
-            this.tbMicThreshold.Name = "tbMicThreshold";
-            this.tbMicThreshold.Size = new System.Drawing.Size(194, 27);
-            this.tbMicThreshold.TabIndex = 13;
-            this.tbMicThreshold.TickFrequency = 25;
-            this.tbMicThreshold.Value = 25;
-            this.tbMicThreshold.Scroll += new System.EventHandler(this.tbMicThreshold_Scroll);
-            this.tbMicThreshold.ValueChanged += new System.EventHandler(this.tbMax_ValueChanged);
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(70, 292);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(28, 19);
+            this.label12.TabIndex = 13;
+            this.label12.Text = "ms";
             // 
-            // tbMicBoost
+            // label11
             // 
-            this.tbMicBoost.AutoSize = false;
-            this.tbMicBoost.LargeChange = 10;
-            this.tbMicBoost.Location = new System.Drawing.Point(72, 113);
-            this.tbMicBoost.Maximum = 50;
-            this.tbMicBoost.Minimum = 10;
-            this.tbMicBoost.Name = "tbMicBoost";
-            this.tbMicBoost.Size = new System.Drawing.Size(194, 27);
-            this.tbMicBoost.TabIndex = 13;
-            this.tbMicBoost.TickFrequency = 10;
-            this.tbMicBoost.Value = 10;
-            this.tbMicBoost.Scroll += new System.EventHandler(this.tbMicBoost_Scroll);
-            this.tbMicBoost.ValueChanged += new System.EventHandler(this.tbMax_ValueChanged);
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(70, 347);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(28, 19);
+            this.label11.TabIndex = 13;
+            this.label11.Text = "ms";
             // 
-            // tbMax
+            // label10
             // 
-            this.tbMax.AutoSize = false;
-            this.tbMax.Location = new System.Drawing.Point(72, 165);
-            this.tbMax.Maximum = 100;
-            this.tbMax.Name = "tbMax";
-            this.tbMax.Size = new System.Drawing.Size(194, 27);
-            this.tbMax.TabIndex = 13;
-            this.tbMax.TickFrequency = 25;
-            this.tbMax.Value = 100;
-            this.tbMax.ValueChanged += new System.EventHandler(this.tbMax_ValueChanged);
-            // 
-            // tbMin
-            // 
-            this.tbMin.AutoSize = false;
-            this.tbMin.Location = new System.Drawing.Point(72, 222);
-            this.tbMin.Maximum = 100;
-            this.tbMin.Name = "tbMin";
-            this.tbMin.Size = new System.Drawing.Size(194, 27);
-            this.tbMin.TabIndex = 13;
-            this.tbMin.TickFrequency = 25;
-            this.tbMin.Value = 25;
-            this.tbMin.ValueChanged += new System.EventHandler(this.tbMin_ValueChanged);
-            // 
-            // tbIncTime
-            // 
-            this.tbIncTime.AutoSize = false;
-            this.tbIncTime.LargeChange = 50;
-            this.tbIncTime.Location = new System.Drawing.Point(72, 278);
-            this.tbIncTime.Maximum = 5000;
-            this.tbIncTime.Minimum = 150;
-            this.tbIncTime.Name = "tbIncTime";
-            this.tbIncTime.Size = new System.Drawing.Size(194, 27);
-            this.tbIncTime.SmallChange = 10;
-            this.tbIncTime.TabIndex = 13;
-            this.tbIncTime.TickFrequency = 1225;
-            this.tbIncTime.Value = 2000;
-            this.tbIncTime.ValueChanged += new System.EventHandler(this.ibIncTime_ValueChanged);
-            // 
-            // tbDecTime
-            // 
-            this.tbDecTime.AutoSize = false;
-            this.tbDecTime.LargeChange = 50;
-            this.tbDecTime.Location = new System.Drawing.Point(72, 333);
-            this.tbDecTime.Maximum = 5000;
-            this.tbDecTime.Minimum = 150;
-            this.tbDecTime.Name = "tbDecTime";
-            this.tbDecTime.Size = new System.Drawing.Size(194, 27);
-            this.tbDecTime.SmallChange = 10;
-            this.tbDecTime.TabIndex = 13;
-            this.tbDecTime.TickFrequency = 1225;
-            this.tbDecTime.Value = 150;
-            this.tbDecTime.ValueChanged += new System.EventHandler(this.tbDecTime_ValueChanged);
-            // 
-            // tbIncDelay
-            // 
-            this.tbIncDelay.AutoSize = false;
-            this.tbIncDelay.LargeChange = 50;
-            this.tbIncDelay.Location = new System.Drawing.Point(72, 391);
-            this.tbIncDelay.Maximum = 5000;
-            this.tbIncDelay.Minimum = 150;
-            this.tbIncDelay.Name = "tbIncDelay";
-            this.tbIncDelay.Size = new System.Drawing.Size(194, 27);
-            this.tbIncDelay.SmallChange = 500;
-            this.tbIncDelay.TabIndex = 13;
-            this.tbIncDelay.TickFrequency = 1225;
-            this.tbIncDelay.Value = 150;
-            this.tbIncDelay.ValueChanged += new System.EventHandler(this.tbIncDelay_ValueChanged);
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(71, 405);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(28, 19);
+            this.label10.TabIndex = 13;
+            this.label10.Text = "ms";
             // 
             // nudIncDelay
             // 
@@ -305,7 +228,7 @@
             0,
             0,
             0});
-            this.nudIncDelay.Location = new System.Drawing.Point(7, 396);
+            this.nudIncDelay.Location = new System.Drawing.Point(7, 403);
             this.nudIncDelay.Margin = new System.Windows.Forms.Padding(4);
             this.nudIncDelay.Maximum = new decimal(new int[] {
             5000,
@@ -320,32 +243,35 @@
             this.nudIncDelay.Name = "nudIncDelay";
             this.nudIncDelay.Size = new System.Drawing.Size(57, 27);
             this.nudIncDelay.TabIndex = 12;
+            this.nudIncDelay.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.nudIncDelay.Value = new decimal(new int[] {
-            150,
+            1750,
             0,
             0,
             0});
-            this.nudIncDelay.ValueChanged += new System.EventHandler(this.nudMicThreshold_ValueChanged);
+            this.nudIncDelay.ValueChanged += new System.EventHandler(this.nud_ValueChanged);
             // 
             // nudMicThreshold
             // 
-            this.nudMicThreshold.Location = new System.Drawing.Point(7, 58);
+            this.nudMicThreshold.Location = new System.Drawing.Point(7, 66);
             this.nudMicThreshold.Margin = new System.Windows.Forms.Padding(4);
             this.nudMicThreshold.Name = "nudMicThreshold";
             this.nudMicThreshold.Size = new System.Drawing.Size(57, 27);
             this.nudMicThreshold.TabIndex = 12;
+            this.nudMicThreshold.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.nudMicThreshold.Value = new decimal(new int[] {
-            25,
+            20,
             0,
             0,
             0});
-            this.nudMicThreshold.ValueChanged += new System.EventHandler(this.nudMicThreshold_ValueChanged);
+            this.nudMicThreshold.ValueChanged += new System.EventHandler(this.nud_ValueChanged);
             // 
             // label8
             // 
-            this.label8.Location = new System.Drawing.Point(72, 36);
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(6, 43);
             this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(194, 19);
+            this.label8.Size = new System.Drawing.Size(108, 19);
             this.label8.TabIndex = 11;
             this.label8.Text = "Mic threshold:";
             this.label8.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -357,26 +283,27 @@
             0,
             0,
             0});
-            this.nudDecTime.Location = new System.Drawing.Point(7, 338);
+            this.nudDecTime.Location = new System.Drawing.Point(7, 345);
             this.nudDecTime.Maximum = new decimal(new int[] {
             5000,
             0,
             0,
             0});
             this.nudDecTime.Minimum = new decimal(new int[] {
-            150,
+            50,
             0,
             0,
             0});
             this.nudDecTime.Name = "nudDecTime";
             this.nudDecTime.Size = new System.Drawing.Size(57, 27);
             this.nudDecTime.TabIndex = 9;
+            this.nudDecTime.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.nudDecTime.Value = new decimal(new int[] {
             200,
             0,
             0,
             0});
-            this.nudDecTime.ValueChanged += new System.EventHandler(this.valueChanged);
+            this.nudDecTime.ValueChanged += new System.EventHandler(this.nud_ValueChanged);
             // 
             // nudIncTime
             // 
@@ -385,7 +312,7 @@
             0,
             0,
             0});
-            this.nudIncTime.Location = new System.Drawing.Point(7, 283);
+            this.nudIncTime.Location = new System.Drawing.Point(7, 290);
             this.nudIncTime.Maximum = new decimal(new int[] {
             5000,
             0,
@@ -399,56 +326,62 @@
             this.nudIncTime.Name = "nudIncTime";
             this.nudIncTime.Size = new System.Drawing.Size(57, 27);
             this.nudIncTime.TabIndex = 9;
+            this.nudIncTime.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.nudIncTime.Value = new decimal(new int[] {
-            2000,
+            1750,
             0,
             0,
             0});
-            this.nudIncTime.ValueChanged += new System.EventHandler(this.valueChanged);
+            this.nudIncTime.ValueChanged += new System.EventHandler(this.nud_ValueChanged);
             // 
             // label7
             // 
-            this.label7.Location = new System.Drawing.Point(72, 311);
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(6, 323);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(194, 19);
+            this.label7.Size = new System.Drawing.Size(108, 19);
             this.label7.TabIndex = 7;
-            this.label7.Text = "Decrease time [ms]:";
+            this.label7.Text = "Decrease time:";
             this.label7.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // label6
             // 
-            this.label6.Location = new System.Drawing.Point(72, 256);
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(6, 268);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(194, 19);
+            this.label6.Size = new System.Drawing.Size(103, 19);
             this.label6.TabIndex = 7;
-            this.label6.Text = "Increase time [ms]:";
+            this.label6.Text = "Increase time:";
             this.label6.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // label5
             // 
-            this.label5.Location = new System.Drawing.Point(72, 200);
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(6, 211);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(194, 19);
+            this.label5.Size = new System.Drawing.Size(95, 19);
             this.label5.TabIndex = 7;
             this.label5.Text = "Min volume:";
             this.label5.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // label4
             // 
-            this.label4.Location = new System.Drawing.Point(72, 143);
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(6, 154);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(194, 19);
+            this.label4.Size = new System.Drawing.Size(97, 19);
             this.label4.TabIndex = 7;
             this.label4.Text = "Max volume:";
             this.label4.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // label9
             // 
-            this.label9.Location = new System.Drawing.Point(72, 369);
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(6, 380);
             this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(194, 19);
+            this.label9.Size = new System.Drawing.Size(110, 19);
             this.label9.TabIndex = 4;
-            this.label9.Text = "Increase delay [ms]:";
+            this.label9.Text = "Increase delay:";
             this.label9.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // groupBox2
@@ -457,12 +390,24 @@
             this.groupBox2.Controls.Add(this.barOut);
             this.groupBox2.Controls.Add(this.label2);
             this.groupBox2.Controls.Add(this.label1);
-            this.groupBox2.Location = new System.Drawing.Point(293, 12);
+            this.groupBox2.Location = new System.Drawing.Point(153, 12);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(139, 437);
             this.groupBox2.TabIndex = 9;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Preview";
+            // 
+            // volumeIncreaseTimer
+            // 
+            this.volumeIncreaseTimer.Tick += new System.EventHandler(this.volumeIncreaseTimer_Tick);
+            // 
+            // volumeDecreaseTimer
+            // 
+            this.volumeDecreaseTimer.Tick += new System.EventHandler(this.volumeDecreaseTimer_Tick);
+            // 
+            // increaseDelayTimer
+            // 
+            this.increaseDelayTimer.Tick += new System.EventHandler(this.increaseDelayTimer_Tick);
             // 
             // barMicIn
             // 
@@ -475,9 +420,9 @@
             this.barMicIn.ShowThresholdValue = true;
             this.barMicIn.Size = new System.Drawing.Size(35, 357);
             this.barMicIn.TabIndex = 0;
-            this.barMicIn.ThresholdValue = 25;
+            this.barMicIn.ThresholdValue = 100;
             this.barMicIn.ThresholdValueColor = System.Drawing.Color.Yellow;
-            this.barMicIn.Value = 50;
+            this.barMicIn.Value = 0;
             this.barMicIn.ReachedThreshold += new System.EventHandler(this.barMicIn_ReachedThreshold);
             // 
             // barOut
@@ -493,35 +438,30 @@
             this.barOut.TabIndex = 1;
             this.barOut.ThresholdValue = 0;
             this.barOut.ThresholdValueColor = System.Drawing.Color.Yellow;
-            this.barOut.Value = 50;
+            this.barOut.Value = 0;
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 19F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(444, 461);
+            this.ClientSize = new System.Drawing.Size(304, 461);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.groupBox2);
             this.Font = new System.Drawing.Font("Calibri", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(4);
             this.MaximizeBox = false;
-            this.MaximumSize = new System.Drawing.Size(460, 500);
-            this.MinimumSize = new System.Drawing.Size(460, 500);
+            this.MaximumSize = new System.Drawing.Size(320, 500);
+            this.MinimumSize = new System.Drawing.Size(320, 500);
             this.Name = "Form1";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Caster";
+            this.Shown += new System.EventHandler(this.Form1_Shown);
             ((System.ComponentModel.ISupportInitialize)(this.nudMicBoost)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudMax)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudMin)).EndInit();
             this.groupBox1.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.tbMicThreshold)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.tbMicBoost)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.tbMax)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.tbMin)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.tbIncTime)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.tbDecTime)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.tbIncDelay)).EndInit();
+            this.groupBox1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudIncDelay)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudMicThreshold)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudDecTime)).EndInit();
@@ -552,13 +492,12 @@
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.NumericUpDown nudIncDelay;
         private System.Windows.Forms.Label label9;
-        private System.Windows.Forms.TrackBar tbMax;
-        private System.Windows.Forms.TrackBar tbMin;
-        private System.Windows.Forms.TrackBar tbIncTime;
-        private System.Windows.Forms.TrackBar tbDecTime;
-        private System.Windows.Forms.TrackBar tbIncDelay;
-        private System.Windows.Forms.TrackBar tbMicThreshold;
-        private System.Windows.Forms.TrackBar tbMicBoost;
+        private System.Windows.Forms.Label label12;
+        private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.Timer volumeIncreaseTimer;
+        private System.Windows.Forms.Timer volumeDecreaseTimer;
+        private System.Windows.Forms.Timer increaseDelayTimer;
     }
 }
 
