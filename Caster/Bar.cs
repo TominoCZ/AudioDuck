@@ -114,7 +114,7 @@ namespace Caster
             e.Graphics.FillRectangle(new SolidBrush(_barColor), 1, height - barHeight + 1, width, barHeight);
 
             if (ShowThresholdValue)
-                e.Graphics.DrawLine(new Pen(new SolidBrush(_thresholdValueColor), 4), 0, thresholdY, width, thresholdY);
+                e.Graphics.DrawLine(new Pen(new SolidBrush(_thresholdValueColor), 3), 0, thresholdY, width, thresholdY);
 
             e.Graphics.DrawRectangle(new Pen(new SolidBrush(_outlineColor), 4), ClientRectangle);
         }

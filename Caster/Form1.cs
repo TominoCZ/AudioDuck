@@ -1,7 +1,10 @@
 ﻿using Caster.Properties;
 using NAudio.CoreAudioApi;
+using NAudio.Wave;
 using System;
+using System.Diagnostics;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Caster
@@ -15,13 +18,25 @@ namespace Caster
 
         Average micAvg, speakerAvg;
 
+        Thread updateThread;
+
         double step;
 
         bool loadedSettings;
 
+        FastTimer volumeIncreaseTimer, volumeDecreaseTimer, increaseDelayTimer;
+
         public Form1()
         {
             InitializeComponent();
+
+            volumeIncreaseTimer = new FastTimer();
+            volumeDecreaseTimer = new FastTimer();
+            increaseDelayTimer = new FastTimer();
+
+            volumeIncreaseTimer.Tick += volumeIncreaseTimer_Tick;
+            volumeDecreaseTimer.Tick += volumeDecreaseTimer_Tick;
+            increaseDelayTimer.Tick += increaseDelayTimer_Tick;
 
             Settings.Default.Reload();
 
@@ -35,16 +50,12 @@ namespace Caster
 
             loadedSettings = true;
 
-            var session = new MMDeviceEnumerator();
-
-            speaker = session.GetDefaultAudioEndpoint(DataFlow.Render, Role.Console);
-            sessions = speaker.AudioSessionManager.Sessions;
-            mic = session.GetDefaultAudioEndpoint(DataFlow.Capture, Role.Multimedia);
+            valueChanged(null, null);
 
             micAvg = new Average();
             speakerAvg = new Average();
 
-            new Thread(() =>
+            updateThread = new Thread(() =>
             {
                 while (true)
                 {
@@ -52,12 +63,19 @@ namespace Caster
                     {
                         BeginInvoke(new MethodInvoker(() =>
                         {
+                            //load devices
+                            var session = new MMDeviceEnumerator();
+
+                            speaker = session.GetDefaultAudioEndpoint(DataFlow.Render, Role.Console);
+                            mic = session.GetDefaultAudioEndpoint(DataFlow.Capture, Role.Multimedia);
+
+                            sessions = speaker.AudioSessionManager.Sessions;
+
+
                             double peakIn = mic.AudioMeterInformation.MasterPeakValue * (double)nudMicBoost.Value;
                             double peakOut = speaker.AudioMeterInformation.MasterPeakValue;
 
-                            double cancellation = peakOut / 100;
-
-                            micAvg.Add(Clamp(peakIn - cancellation, 0, 1));
+                            micAvg.Add(Clamp(peakIn, 0, 1));
 
                             if (micAvg.isReady())
                                 barMicIn.Value = (int)(micAvg.getAverage() * 100);
@@ -73,7 +91,9 @@ namespace Caster
                     Thread.Sleep(TimeSpan.FromMilliseconds(1000.0 / 60.0 / 3.0)); //get 5 samples while maintaining 60 FPS
                 }
             })
-            { IsBackground = true }.Start();
+            { IsBackground = true };
+
+            updateThread.Start();
         }
 
         private void barMicIn_ReachedThreshold(object sender, EventArgs e)
@@ -86,7 +106,7 @@ namespace Caster
 
                 volumeIncreaseTimer.Stop();
 
-                volumeDecreaseTimer.Interval = (int)(nudDecTime.Value / 10);
+                volumeDecreaseTimer.Interval = TimeSpan.FromMilliseconds((double)nudDecTime.Value / 10);
                 volumeDecreaseTimer.Start();
             }
         }
@@ -136,24 +156,49 @@ namespace Caster
         {
             if (!increaseDelayTimer.Enabled)
             {
-                increaseDelayTimer.Interval = (int)nudIncDelay.Value;
+                increaseDelayTimer.Interval = TimeSpan.FromMilliseconds((double)nudIncDelay.Value);
                 increaseDelayTimer.Enabled = true;
             }
-        }
-
-        private void btnUseCurrentMax_Click(object sender, EventArgs e)
-        {
-            nudMax.Value = (decimal)speaker.AudioEndpointVolume.MasterVolumeLevelScalar * 100;
-        }
-
-        private void btnUseCurrentMin_Click(object sender, EventArgs e)
-        {
-            nudMin.Value = (decimal)speaker.AudioEndpointVolume.MasterVolumeLevelScalar * 100;
         }
 
         private void nudMicThreshold_ValueChanged(object sender, EventArgs e)
         {
             barMicIn.ThresholdValue = (int)nudMicThreshold.Value;
+        }
+
+        private void tbMax_ValueChanged(object sender, EventArgs e)
+        {
+            nudMax.Value = (decimal)Clamp(tbMax.Value, 1, tbMax.Maximum);
+        }
+
+        private void tbMin_ValueChanged(object sender, EventArgs e)
+        {
+            nudMin.Value = (decimal)Clamp(tbMin.Value, 1, tbMin.Maximum);
+        }
+
+        private void ibIncTime_ValueChanged(object sender, EventArgs e)
+        {
+            nudIncTime.Value = tbIncTime.Value;
+        }
+
+        private void tbDecTime_ValueChanged(object sender, EventArgs e)
+        {
+            nudDecTime.Value = tbDecTime.Value;
+        }
+
+        private void tbIncDelay_ValueChanged(object sender, EventArgs e)
+        {
+            nudIncDelay.Value = tbIncDelay.Value;
+        }
+
+        private void tbMicThreshold_Scroll(object sender, EventArgs e)
+        {
+            nudMicThreshold.Value = tbMicThreshold.Value;
+        }
+
+        private void tbMicBoost_Scroll(object sender, EventArgs e)
+        {
+            nudMicBoost.Value = (decimal)tbMicBoost.Value / 10;
         }
 
         private void valueChanged(object sender, EventArgs e)
@@ -172,14 +217,26 @@ namespace Caster
 
             Settings.Default.IncreaseDelay = (int)nudIncDelay.Value;
 
+
+            tbMicBoost.Value = (int)(nudMicBoost.Value * 10);
+            tbMicThreshold.Value = (int)nudMicThreshold.Value;
+
+            tbMin.Value = (int)nudMin.Value;
+            tbMax.Value = (int)nudMax.Value;
+
+            tbIncTime.Value = (int)nudIncTime.Value;
+            tbDecTime.Value = (int)nudDecTime.Value;
+
+            tbIncDelay.Value = (int)nudIncDelay.Value;
+
             Settings.Default.Save();
         }
 
         private void increaseDelayTimer_Tick(object sender, EventArgs e)
         {
-            step = Math.Abs((double)nudMax.Value / 100 - GetTopSession().SimpleAudioVolume.Volume) / 10;
+            step = Math.Abs((double)nudMax.Value / 100 - GetTopSession().SimpleAudioVolume.Volume) / 15;
 
-            volumeIncreaseTimer.Interval = (int)(nudIncTime.Value / 10);
+            volumeIncreaseTimer.Interval = TimeSpan.FromMilliseconds((double)nudIncTime.Value / 15);
             volumeIncreaseTimer.Start();
 
             increaseDelayTimer.Stop();
@@ -230,6 +287,87 @@ namespace Caster
             Values = new double[] { -1, -1, -1 };
 
             return avg;
+        }
+    }
+
+    class FastTimer
+    {
+        public EventHandler Tick;
+        public TimeSpan Interval;
+
+        public bool Enabled
+        {
+            get => _enabled;
+
+            set
+            {
+                if (value != _enabled)
+                {
+                    if (value)
+                        Start();
+                    else
+                        Stop();
+                }
+            }
+        }
+
+        private bool _enabled;
+
+        ThreadNode thread;
+
+        public FastTimer()
+        {
+            Interval = TimeSpan.FromMilliseconds(1);
+        }
+
+        public void Start()
+        {
+            if (thread != null || Tick == null)
+                return;
+
+            thread = new ThreadNode();
+            thread.Tick += tick;
+            thread.Interval = Interval;
+            thread.Enabled = true;
+            thread.Start();
+        }
+
+        private void tick(object sender, EventArgs e)
+        {
+            Tick(sender, e);
+        }
+
+        public void Stop()
+        {
+            if (thread != null)
+            {
+                thread.Enabled = false;
+                thread = null;
+            }
+        }
+    }
+
+    class ThreadNode
+    {
+        public EventHandler Tick;
+        public TimeSpan Interval;
+
+        public bool Enabled;
+
+        private Thread t;
+
+        public void Start()
+        {
+            t = new Thread(() =>
+            {
+                while (Enabled)
+                {
+                    Thread.Sleep(Interval);
+
+                    Tick(this, null);
+                }
+            });
+            t.Start();
         }
     }
 }
