@@ -61,6 +61,10 @@
             this.btnAddException = new System.Windows.Forms.Button();
             this.tbProcessName = new System.Windows.Forms.TextBox();
             this.lbExceptions = new System.Windows.Forms.ListBox();
+            this.menuStrip1 = new System.Windows.Forms.MenuStrip();
+            this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.loadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.nudMicBoost)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudMax)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudMin)).BeginInit();
@@ -71,6 +75,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.nudIncTime)).BeginInit();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
+            this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // nudMicBoost
@@ -168,7 +173,7 @@
             this.nudMin.TabIndex = 6;
             this.nudMin.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.nudMin.Value = new decimal(new int[] {
-            30,
+            25,
             0,
             0,
             0});
@@ -193,7 +198,7 @@
             this.groupBox1.Controls.Add(this.label9);
             this.groupBox1.Controls.Add(this.label3);
             this.groupBox1.Controls.Add(this.nudMicBoost);
-            this.groupBox1.Location = new System.Drawing.Point(192, 12);
+            this.groupBox1.Location = new System.Drawing.Point(192, 27);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(135, 422);
             this.groupBox1.TabIndex = 8;
@@ -251,7 +256,7 @@
             this.nudIncDelay.TabIndex = 12;
             this.nudIncDelay.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.nudIncDelay.Value = new decimal(new int[] {
-            1750,
+            2000,
             0,
             0,
             0});
@@ -266,7 +271,7 @@
             this.nudMicThreshold.TabIndex = 12;
             this.nudMicThreshold.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.nudMicThreshold.Value = new decimal(new int[] {
-            20,
+            15,
             0,
             0,
             0});
@@ -305,7 +310,7 @@
             this.nudDecTime.TabIndex = 9;
             this.nudDecTime.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.nudDecTime.Value = new decimal(new int[] {
-            200,
+            100,
             0,
             0,
             0});
@@ -334,7 +339,7 @@
             this.nudIncTime.TabIndex = 9;
             this.nudIncTime.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             this.nudIncTime.Value = new decimal(new int[] {
-            1750,
+            2000,
             0,
             0,
             0});
@@ -396,7 +401,7 @@
             this.groupBox2.Controls.Add(this.barOut);
             this.groupBox2.Controls.Add(this.label2);
             this.groupBox2.Controls.Add(this.label1);
-            this.groupBox2.Location = new System.Drawing.Point(333, 12);
+            this.groupBox2.Location = new System.Drawing.Point(333, 27);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(139, 422);
             this.groupBox2.TabIndex = 9;
@@ -452,7 +457,7 @@
             this.groupBox3.Controls.Add(this.btnAddException);
             this.groupBox3.Controls.Add(this.tbProcessName);
             this.groupBox3.Controls.Add(this.lbExceptions);
-            this.groupBox3.Location = new System.Drawing.Point(12, 12);
+            this.groupBox3.Location = new System.Drawing.Point(12, 27);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Size = new System.Drawing.Size(174, 422);
             this.groupBox3.TabIndex = 10;
@@ -500,20 +505,54 @@
             this.lbExceptions.TabIndex = 0;
             this.lbExceptions.KeyDown += new System.Windows.Forms.KeyEventHandler(this.lbExceptions_KeyDown);
             // 
+            // menuStrip1
+            // 
+            this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.fileToolStripMenuItem});
+            this.menuStrip1.Location = new System.Drawing.Point(0, 0);
+            this.menuStrip1.Name = "menuStrip1";
+            this.menuStrip1.Size = new System.Drawing.Size(484, 24);
+            this.menuStrip1.TabIndex = 11;
+            this.menuStrip1.Text = "menuStrip1";
+            // 
+            // fileToolStripMenuItem
+            // 
+            this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.loadToolStripMenuItem,
+            this.saveToolStripMenuItem});
+            this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
+            this.fileToolStripMenuItem.Size = new System.Drawing.Size(53, 20);
+            this.fileToolStripMenuItem.Text = "Profile";
+            // 
+            // loadToolStripMenuItem
+            // 
+            this.loadToolStripMenuItem.Name = "loadToolStripMenuItem";
+            this.loadToolStripMenuItem.Size = new System.Drawing.Size(100, 22);
+            this.loadToolStripMenuItem.Text = "Load";
+            this.loadToolStripMenuItem.Click += new System.EventHandler(this.loadToolStripMenuItem_Click);
+            // 
+            // saveToolStripMenuItem
+            // 
+            this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(100, 22);
+            this.saveToolStripMenuItem.Text = "Save";
+            this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 19F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(484, 446);
+            this.ClientSize = new System.Drawing.Size(484, 461);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.groupBox2);
+            this.Controls.Add(this.menuStrip1);
             this.Font = new System.Drawing.Font("Calibri", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(4);
             this.MaximizeBox = false;
-            this.MaximumSize = new System.Drawing.Size(500, 485);
-            this.MinimumSize = new System.Drawing.Size(500, 485);
+            this.MaximumSize = new System.Drawing.Size(500, 500);
+            this.MinimumSize = new System.Drawing.Size(500, 500);
             this.Name = "Form1";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Caster";
@@ -530,7 +569,10 @@
             this.groupBox2.ResumeLayout(false);
             this.groupBox3.ResumeLayout(false);
             this.groupBox3.PerformLayout();
+            this.menuStrip1.ResumeLayout(false);
+            this.menuStrip1.PerformLayout();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -566,6 +608,10 @@
         private System.Windows.Forms.Label label13;
         private System.Windows.Forms.Button btnAddException;
         private System.Windows.Forms.TextBox tbProcessName;
+        private System.Windows.Forms.MenuStrip menuStrip1;
+        private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem loadToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
     }
 }
 

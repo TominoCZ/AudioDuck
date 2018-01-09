@@ -3,6 +3,9 @@ using NAudio.CoreAudioApi;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Diagnostics;
+using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading;
 using System.Windows.Forms;
 
@@ -26,6 +29,11 @@ namespace Caster
         public Form1()
         {
             InitializeComponent();
+        }
+
+        private void Form1_Shown(object sender, EventArgs e)
+        {
+            var si = Process.GetCurrentProcess().StartInfo;
 
             micAvg = new Average();
             speakerAvg = new Average();
@@ -84,41 +92,7 @@ namespace Caster
             { IsBackground = true };
 
             updateThread.Start();
-        }
 
-        private List<AudioSessionControl> getControls(SessionCollection sessions)
-        {
-            object[] ex = new object[lbExceptions.Items.Count];
-
-            lbExceptions.Items.CopyTo(ex, 0);
-
-            List<AudioSessionControl> controls = new List<AudioSessionControl>();
-
-            for (int i = 0; i < sessions.Count; i++)
-            {
-                var session = sessions[i];
-                var text = (session.GetSessionIdentifier + session.GetSessionInstanceIdentifier).ToLower();
-
-                bool inExceptions = false;
-
-                foreach (string e in ex)
-                {
-                    if (text.Contains(e))
-                    {
-                        inExceptions = true;
-                        break;
-                    }
-                }
-
-                if (!inExceptions)
-                    controls.Add(session);
-            }
-
-            return controls;
-        }
-
-        private void Form1_Shown(object sender, EventArgs e)
-        {
             Settings.Default.Reload();
 
             if (Settings.Default.Exceptions != null)
@@ -138,8 +112,6 @@ namespace Caster
             nudIncDelay.Value = Settings.Default.IncreaseDelay;
 
             loadedSettings = true;
-
-            nud_ValueChanged(null, null);
         }
 
         private void barMicIn_ReachedThreshold(object sender, EventArgs e)
@@ -234,6 +206,8 @@ namespace Caster
 
                     if (dr == DialogResult.Yes)
                         lbExceptions.Items.Remove(s);
+
+                    exceptionsChanged();
                 }
             }
         }
@@ -258,6 +232,11 @@ namespace Caster
                 }
             }
 
+            exceptionsChanged();
+        }
+
+        private void exceptionsChanged()
+        {
             var sc = new StringCollection();
             for (int i = 0; i < lbExceptions.Items.Count; i++)
             {
@@ -292,7 +271,155 @@ namespace Caster
                 btnAddException_Click(sender, null);
         }
 
-        AudioSessionControl GetTopSession()
+        private void saveToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                var sfd = new SaveFileDialog();
+
+                sfd.Filter = "Caster Profile Files|*.cprofile";
+                sfd.FileName = $"profile";
+
+                try
+                {
+                    if (!Directory.Exists("profiles"))
+                        Directory.CreateDirectory("profiles");
+
+                    sfd.InitialDirectory = Directory.GetCurrentDirectory() + "\\profiles";
+
+                    for (int i = 0; i < int.MaxValue; i++)
+                    {
+                        if (!File.Exists($"{sfd.InitialDirectory}\\profile_{i}.cprofile"))
+                        {
+                            sfd.FileName = $"profile_{i}";
+                            break;
+                        }
+                    }
+                }
+                catch (UnauthorizedAccessException ex)
+                {
+                    MessageBox.Show("Could not create the directory 'profiles': Access denied.\nRun this program as an Administrator to prevent this issue.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                catch
+                {
+                    MessageBox.Show("Could not create the directory 'profiles'.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+
+                var result = sfd.ShowDialog();
+
+                if (result != DialogResult.Cancel && sfd.CheckPathExists)
+                {
+                    var bf = new BinaryFormatter();
+                    var profile = new Profile();
+
+                    profile.micBoost = Settings.Default.MicBoost;
+                    profile.micThreshold = Settings.Default.MicThreshold;
+                    profile.maxVolume = Settings.Default.MaxVolume;
+                    profile.minVolume = Settings.Default.MinVolume;
+                    profile.increaseTime = Settings.Default.IncreaseTime;
+                    profile.decreaseTime = Settings.Default.DecreaseTime;
+                    profile.increaseDelay = Settings.Default.IncreaseDelay;
+                    profile.Exceptions = Settings.Default.Exceptions;
+
+                    using (var fs = sfd.OpenFile())
+                        bf.Serialize(fs, profile);
+                }
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                MessageBox.Show("An error has occured while writing the file: Access denied.\nRun this program as an Administrator to prevent this issue.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            catch
+            {
+                MessageBox.Show("An error has occured while writing the file.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void loadToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                var ofd = new OpenFileDialog();
+
+                ofd.Filter = "Caster Profile Files|*.cprofile";
+                ofd.InitialDirectory = Directory.GetCurrentDirectory() + "\\profiles";
+
+                var result = ofd.ShowDialog();
+
+                if (result != DialogResult.Cancel && ofd.CheckPathExists && ofd.CheckFileExists)
+                {
+                    loadedSettings = false;
+
+                    var bf = new BinaryFormatter();
+                    Profile profile;
+
+                    using (var fs = ofd.OpenFile())
+                        profile = (Profile)bf.Deserialize(fs);
+
+                    lbExceptions.Items.Clear();
+
+                    if (profile.Exceptions != null)
+                    {
+                        foreach (var ex in profile.Exceptions)
+                        {
+                            lbExceptions.Items.Add(ex);
+                        }
+                    }
+
+                    nudMicBoost.Value = (decimal)profile.micBoost;
+                    nudMicThreshold.Value = barMicIn.ThresholdValue = profile.micThreshold;
+                    nudMin.Value = profile.minVolume;
+                    nudMax.Value = profile.maxVolume;
+                    nudIncTime.Value = profile.increaseTime;
+                    nudDecTime.Value = profile.decreaseTime;
+                    nudIncDelay.Value = profile.increaseDelay;
+
+                    loadedSettings = true;
+                }
+            }
+            catch
+            {
+                MessageBox.Show("An error has occured.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private double Clamp(double d, double min, double max)
+        {
+            return d < min ? min : (d > max ? max : d);
+        }
+
+        private List<AudioSessionControl> getControls(SessionCollection sessions)
+        {
+            object[] ex = new object[lbExceptions.Items.Count];
+
+            lbExceptions.Items.CopyTo(ex, 0);
+
+            List<AudioSessionControl> controls = new List<AudioSessionControl>();
+
+            for (int i = 0; i < sessions.Count; i++)
+            {
+                var session = sessions[i];
+                var text = (session.GetSessionIdentifier + session.GetSessionInstanceIdentifier).ToLower();
+
+                bool inExceptions = false;
+
+                foreach (string e in ex)
+                {
+                    if (text.Contains($"\\{e}.exe"))
+                    {
+                        inExceptions = true;
+                        break;
+                    }
+                }
+
+                if (!inExceptions)
+                    controls.Add(session);
+            }
+
+            return controls;
+        }
+
+        private AudioSessionControl GetTopSession()
         {
             float level = float.MinValue;
             AudioSessionControl asc = null;
@@ -309,11 +436,6 @@ namespace Caster
             }
 
             return asc;
-        }
-
-        private double Clamp(double d, double min, double max)
-        {
-            return d < min ? min : (d > max ? max : d);
         }
     }
 
@@ -357,5 +479,20 @@ namespace Caster
 
             return avg;
         }
+    }
+
+    [Serializable]
+    class Profile
+    {
+        public double micBoost;
+
+        public int micThreshold;
+        public int maxVolume;
+        public int minVolume;
+        public int increaseTime;
+        public int decreaseTime;
+        public int increaseDelay;
+
+        public StringCollection Exceptions;
     }
 }
