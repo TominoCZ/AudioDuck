@@ -1,4 +1,4 @@
-﻿namespace Caster
+﻿namespace AudioDuck
 {
     partial class Bar
     {

@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace Caster
+namespace AudioDuck
 {
     public partial class Bar : UserControl
     {

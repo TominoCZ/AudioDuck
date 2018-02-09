@@ -1,4 +1,4 @@
-﻿namespace Caster
+﻿namespace AudioDuck
 {
     partial class Form1
     {
@@ -51,8 +51,8 @@
             this.label4 = new System.Windows.Forms.Label();
             this.label9 = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.barMicIn = new Caster.Bar();
-            this.barOut = new Caster.Bar();
+            this.barMicIn = new AudioDuck.Bar();
+            this.barOut = new AudioDuck.Bar();
             this.volumeIncreaseTimer = new System.Windows.Forms.Timer(this.components);
             this.volumeDecreaseTimer = new System.Windows.Forms.Timer(this.components);
             this.increaseDelayTimer = new System.Windows.Forms.Timer(this.components);
@@ -419,8 +419,8 @@
             this.barMicIn.ShowThresholdValue = true;
             this.barMicIn.Size = new System.Drawing.Size(35, 342);
             this.barMicIn.TabIndex = 0;
-            this.barMicIn.ThresholdValue = 100;
-            this.barMicIn.ThresholdValueColor = System.Drawing.Color.Yellow;
+            this.barMicIn.ThresholdValue = 101;
+            this.barMicIn.ThresholdValueColor = System.Drawing.SystemColors.ButtonFace;
             this.barMicIn.Value = 0;
             this.barMicIn.ReachedThreshold += new System.EventHandler(this.barMicIn_ReachedThreshold);
             // 
@@ -436,7 +436,7 @@
             this.barOut.Size = new System.Drawing.Size(35, 342);
             this.barOut.TabIndex = 1;
             this.barOut.ThresholdValue = 0;
-            this.barOut.ThresholdValueColor = System.Drawing.Color.Yellow;
+            this.barOut.ThresholdValueColor = System.Drawing.SystemColors.ButtonFace;
             this.barOut.Value = 0;
             // 
             // volumeIncreaseTimer
@@ -555,7 +555,7 @@
             this.MinimumSize = new System.Drawing.Size(500, 500);
             this.Name = "Form1";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Caster";
+            this.Text = "AudioDuck";
             this.Shown += new System.EventHandler(this.Form1_Shown);
             ((System.ComponentModel.ISupportInitialize)(this.nudMicBoost)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudMax)).EndInit();

@@ -1,4 +1,4 @@
-﻿using Caster.Properties;
+﻿using AudioDuck.Properties;
 using NAudio.CoreAudioApi;
 using System;
 using System.Collections.Generic;
@@ -9,7 +9,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading;
 using System.Windows.Forms;
 
-namespace Caster
+namespace AudioDuck
 {
     public partial class Form1 : Form
     {
@@ -153,19 +153,23 @@ namespace Caster
 
         private void increaseDelayTimer_Tick(object sender, EventArgs e)
         {
-            step = Math.Abs((double)nudMax.Value / 100 - GetTopSession().SimpleAudioVolume.Volume) / 12;
+            if (barMicIn.Value < nudMicThreshold.Value)
+            {
+                step = Math.Abs((double)nudMax.Value / 100 - GetTopSession().SimpleAudioVolume.Volume) / 12;
 
-            volumeIncreaseTimer.Interval = (int)(nudIncTime.Value / 12);
-            volumeIncreaseTimer.Start();
+                volumeIncreaseTimer.Interval = (int)(nudIncTime.Value / 12);
 
-            increaseDelayTimer.Stop();
+                volumeIncreaseTimer.Start();
+
+                increaseDelayTimer.Stop();
+            }
         }
 
         private void beginIncrease()
         {
             if (!increaseDelayTimer.Enabled)
             {
-                increaseDelayTimer.Interval = (int)(nudIncDelay.Value);
+                increaseDelayTimer.Interval = (int)nudIncDelay.Value;
                 increaseDelayTimer.Enabled = true;
             }
         }
