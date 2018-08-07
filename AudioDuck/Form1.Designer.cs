@@ -51,7 +51,7 @@
             this.label4 = new System.Windows.Forms.Label();
             this.label9 = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.barMicIn = new AudioDuck.Bar();
+            this.barIn = new AudioDuck.Bar();
             this.barOut = new AudioDuck.Bar();
             this.volumeIncreaseTimer = new System.Windows.Forms.Timer(this.components);
             this.volumeDecreaseTimer = new System.Windows.Forms.Timer(this.components);
@@ -65,6 +65,9 @@
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.loadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.notifyIcon1 = new System.Windows.Forms.NotifyIcon(this.components);
+            this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.nudMicBoost)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudMax)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudMin)).BeginInit();
@@ -76,6 +79,7 @@
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.menuStrip1.SuspendLayout();
+            this.contextMenuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // nudMicBoost
@@ -397,7 +401,7 @@
             // 
             // groupBox2
             // 
-            this.groupBox2.Controls.Add(this.barMicIn);
+            this.groupBox2.Controls.Add(this.barIn);
             this.groupBox2.Controls.Add(this.barOut);
             this.groupBox2.Controls.Add(this.label2);
             this.groupBox2.Controls.Add(this.label1);
@@ -410,24 +414,24 @@
             // 
             // barMicIn
             // 
-            this.barMicIn.BackColor = System.Drawing.Color.DeepPink;
-            this.barMicIn.BarColor = System.Drawing.Color.FromArgb(((int)(((byte)(20)))), ((int)(((byte)(255)))), ((int)(((byte)(180)))));
-            this.barMicIn.Location = new System.Drawing.Point(85, 73);
-            this.barMicIn.Margin = new System.Windows.Forms.Padding(4);
-            this.barMicIn.Name = "barMicIn";
-            this.barMicIn.OutlineColor = System.Drawing.Color.Black;
-            this.barMicIn.ShowThresholdValue = true;
-            this.barMicIn.Size = new System.Drawing.Size(35, 342);
-            this.barMicIn.TabIndex = 0;
-            this.barMicIn.ThresholdValue = 101;
-            this.barMicIn.ThresholdValueColor = System.Drawing.SystemColors.ButtonFace;
-            this.barMicIn.Value = 0;
-            this.barMicIn.ReachedThreshold += new System.EventHandler(this.barMicIn_ReachedThreshold);
+            this.barIn.BackColor = System.Drawing.Color.Black;
+            this.barIn.BarColor = System.Drawing.Color.Yellow;
+            this.barIn.Location = new System.Drawing.Point(85, 73);
+            this.barIn.Margin = new System.Windows.Forms.Padding(4);
+            this.barIn.Name = "barIn";
+            this.barIn.OutlineColor = System.Drawing.Color.Black;
+            this.barIn.ShowThresholdValue = true;
+            this.barIn.Size = new System.Drawing.Size(35, 342);
+            this.barIn.TabIndex = 0;
+            this.barIn.ThresholdValue = 101;
+            this.barIn.ThresholdValueColor = System.Drawing.SystemColors.ButtonFace;
+            this.barIn.Value = 0;
+            this.barIn.ReachedThreshold += new System.EventHandler(this.barMicIn_ReachedThreshold);
             // 
             // barOut
             // 
-            this.barOut.BackColor = System.Drawing.Color.DeepPink;
-            this.barOut.BarColor = System.Drawing.Color.FromArgb(((int)(((byte)(20)))), ((int)(((byte)(255)))), ((int)(((byte)(180)))));
+            this.barOut.BackColor = System.Drawing.Color.Black;
+            this.barOut.BarColor = System.Drawing.Color.Yellow;
             this.barOut.Location = new System.Drawing.Point(19, 73);
             this.barOut.Margin = new System.Windows.Forms.Padding(4);
             this.barOut.Name = "barOut";
@@ -538,6 +542,28 @@
             this.saveToolStripMenuItem.Text = "Save";
             this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
             // 
+            // notifyIcon1
+            // 
+            this.notifyIcon1.ContextMenuStrip = this.contextMenuStrip1;
+            this.notifyIcon1.Icon = ((System.Drawing.Icon)(resources.GetObject("notifyIcon1.Icon")));
+            this.notifyIcon1.Text = "AudioDuck";
+            this.notifyIcon1.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.notifyIcon1_MouseDoubleClick);
+            // 
+            // contextMenuStrip1
+            // 
+            this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.exitToolStripMenuItem});
+            this.contextMenuStrip1.Name = "contextMenuStrip1";
+            this.contextMenuStrip1.ShowImageMargin = false;
+            this.contextMenuStrip1.Size = new System.Drawing.Size(156, 48);
+            // 
+            // exitToolStripMenuItem
+            // 
+            this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
+            this.exitToolStripMenuItem.Text = "Exit";
+            this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 19F);
@@ -557,6 +583,7 @@
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "AudioDuck";
             this.Shown += new System.EventHandler(this.Form1_Shown);
+            this.Resize += new System.EventHandler(this.Form1_Resize);
             ((System.ComponentModel.ISupportInitialize)(this.nudMicBoost)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudMax)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudMin)).EndInit();
@@ -571,13 +598,14 @@
             this.groupBox3.PerformLayout();
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
+            this.contextMenuStrip1.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
         }
 
         #endregion
-        private Bar barMicIn;
+        private Bar barIn;
         private Bar barOut;
         private System.Windows.Forms.NumericUpDown nudMicBoost;
         private System.Windows.Forms.Label label1;
@@ -612,6 +640,9 @@
         private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem loadToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
+        private System.Windows.Forms.NotifyIcon notifyIcon1;
+        private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
+        private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
     }
 }
 

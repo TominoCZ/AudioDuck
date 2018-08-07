@@ -12,44 +12,16 @@ namespace AudioDuck
 {
     public partial class Bar : UserControl
     {
-        private Color _barColor, _outlineColor, _thresholdValueColor;
-        private int _value, _thresholdValue;
-        private bool _showThresholdValue, _reachedThreshold;
+        private int _value;
+        private bool _reachedThreshold;
 
         public event EventHandler ReachedThreshold;
 
-        public Color BarColor
-        {
-            get => _barColor;
+        public Color BarColor { get; set; }
 
-            set
-            {
-                _barColor = value;
-                Invalidate();
-            }
-        }
+        public Color ThresholdValueColor { get; set; }
 
-        public Color ThresholdValueColor
-        {
-            get => _thresholdValueColor;
-
-            set
-            {
-                _thresholdValueColor = value;
-                Invalidate();
-            }
-        }
-
-        public Color OutlineColor
-        {
-            get => _outlineColor;
-
-            set
-            {
-                _outlineColor = value;
-                Invalidate();
-            }
-        }
+        public Color OutlineColor { get; set; }
 
         public int Value
         {
@@ -57,7 +29,7 @@ namespace AudioDuck
 
             set
             {
-                if (value >= _thresholdValue)
+                if (value >= ThresholdValue)
                 {
                     if (!_reachedThreshold && ReachedThreshold != null)
                     {
@@ -70,31 +42,12 @@ namespace AudioDuck
                     _reachedThreshold = false;
 
                 _value = value;
-                Invalidate();
             }
         }
 
-        public int ThresholdValue
-        {
-            get => _thresholdValue;
+        public int ThresholdValue { get; set; }
 
-            set
-            {
-                _thresholdValue = value;
-                Invalidate();
-            }
-        }
-
-        public bool ShowThresholdValue
-        {
-            get => _showThresholdValue;
-
-            set
-            {
-                _showThresholdValue = value;
-                Invalidate();
-            }
-        }
+        public bool ShowThresholdValue { get; set; }
 
         public Bar()
         {
@@ -109,14 +62,14 @@ namespace AudioDuck
             float val = _value / 100f;
 
             int barHeight = (int)(height * val);
-            int thresholdY = (int)(height - height * (_thresholdValue / 100f) + 1);
+            int thresholdY = (int)(height - height * (ThresholdValue / 100f) + 1);
 
-            e.Graphics.FillRectangle(new SolidBrush(_barColor), 1, height - barHeight + 1, width, barHeight);
+            e.Graphics.FillRectangle(new SolidBrush(BarColor), 1, height - barHeight + 1, width, barHeight);
 
             if (ShowThresholdValue)
-                e.Graphics.DrawLine(new Pen(new SolidBrush(_thresholdValueColor), 3), 0, thresholdY, width, thresholdY);
+                e.Graphics.DrawLine(new Pen(new SolidBrush(ThresholdValueColor), 1), 0, thresholdY, width, thresholdY);
 
-            e.Graphics.DrawRectangle(new Pen(new SolidBrush(_outlineColor), 4), ClientRectangle);
+            e.Graphics.DrawRectangle(new Pen(new SolidBrush(OutlineColor), 4), ClientRectangle);
         }
     }
 }
